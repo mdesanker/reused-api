@@ -1,0 +1,19 @@
+{
+  "name": "reused-api",
+  "version": "1.0.0",
+  "description": "API for ReUsed store app",
+  "main": "app.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdesanker/reused-api.git"
+  },
+  "author": "Michael Desanker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mdesanker/reused-api/issues"
+  },
+  "homepage": "https://github.com/mdesanker/reused-api#readme"
+}
