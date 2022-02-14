@@ -20,20 +20,20 @@ afterAll(() => {
 describe("POST /auth/register", () => {
   it("return new user", async () => {
     const res = await request(app).post("/auth/register").send({
-      userName: "test",
+      username: "test",
       email: "test@gmail.com",
       password: "password",
       userType: "user",
     });
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty("email");
     expect(res.body.email).toEqual("test@gmail.com");
   });
 
   it("return error for missing login details", async () => {
     const res = await request(app).post("/auth/register").send({
-      userName: "noEmail",
+      username: "noEmail",
       email: "",
       password: "password",
       userType: "user",
@@ -61,17 +61,15 @@ describe("POST /auth/register", () => {
 
   it("return error if email already associated with account", async () => {
     const res = await request(app).post("/auth/register").send({
-      userName: "test2",
+      username: "test2",
       email: "test@gmail.com",
       password: "password",
       userType: "user",
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(409);
     expect(res.body).toHaveProperty("errors");
-    expect(res.body.errors[0].msg).toEqual(
-      "An account is already associated with that email address"
-    );
+    expect(res.body.errors[0].msg).toEqual("Email is already in use");
   });
 });
 
