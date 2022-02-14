@@ -3,12 +3,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
-interface IUserRequest extends Request {
-  user: any;
-}
-
 const authMiddleware = async (
-  req: IUserRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
