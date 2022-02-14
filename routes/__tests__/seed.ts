@@ -26,6 +26,18 @@ const generateJohn = () => {
   users.push(user);
 };
 
+const generateUser = () => {
+  const user = new User<IUser>({
+    _id: "620ab20b2dffe3ba60353a99",
+    username: faker.internet.userName(),
+    email: faker.internet.email(),
+    password: "$2a$10$Gul09bCyJD5IKoecO/WCPOcFONVyLTE3E9SxZMDD3gJ0OnBfFRjem", // "password" hashed
+    userType: "user",
+  });
+
+  users.push(user);
+};
+
 // SEED FUNCTION
 const seedDB = async () => {
   // Generate

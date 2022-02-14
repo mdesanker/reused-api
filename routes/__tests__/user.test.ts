@@ -7,6 +7,8 @@ import seedDB from "./seed";
 // GLOBAL VARIABLES
 let janeToken: string;
 let johnToken: string;
+const userId: string = "620ab20b2dffe3ba60353a99";
+const invalidUserId: string = "620ab20b2dffe3ba60300000";
 
 // TEST SETUP
 beforeAll(async () => {
@@ -54,5 +56,38 @@ describe("GET /user/all", () => {
     expect(res.statusCode).toEqual(401);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Invalid credentials");
+  });
+});
+
+describe("GET /user/:id", () => {
+  it("return user by id for admin", async () => {
+    const res = await request(app)
+      .get(`/user/${userId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body._id).toEqual(userId);
+    expect(res.body).toHaveProperty("username");
+  });
+
+  it("return error for user", async () => {
+    const res = await request(app)
+      .get(`/user/${userId}`)
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
+  });
+
+  it("return error for invalid id", async () => {
+    const res = await request(app)
+      .get(`/user/${invalidUserId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid user id");
   });
 });
