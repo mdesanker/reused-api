@@ -41,7 +41,7 @@ const seedDB = async () => {
     }
   }
 
-  console.log(users);
+  // console.log(users);
   return { users };
 };
 

@@ -12,12 +12,17 @@ const test = (req: Request, res: Response, next: NextFunction) => {
 
 const register = [
   // Validate and sanitize input
-  check("username", "Username is required").trim().notEmpty(),
+  check("username", "Username is required").trim().exists(),
   check("email", "Email is required").trim().notEmpty(),
   check("password", "Password is required")
-    .trim()
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long"),
+  check(
+    "passwordConfirm",
+    "Password confirmation field must have the same value as the password field"
+  )
+    .notEmpty()
+    .custom((value, { req }) => value === req.body.password),
   check("userType").trim(),
 
   // Process input

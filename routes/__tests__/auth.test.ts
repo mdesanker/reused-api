@@ -25,6 +25,7 @@ describe("POST /auth/register", () => {
       username: "test",
       email: "test@gmail.com",
       password: "password",
+      passwordConfirm: "password",
       userType: "user",
     });
 
@@ -37,6 +38,7 @@ describe("POST /auth/register", () => {
       username: "noEmail",
       email: "",
       password: "password",
+      passwordConfirm: "password",
       userType: "user",
     });
 
@@ -50,6 +52,7 @@ describe("POST /auth/register", () => {
       username: "user",
       email: "user@gmail.com",
       password: "pass",
+      passwordConfirm: "pass",
       userType: "user",
     });
 
@@ -60,11 +63,28 @@ describe("POST /auth/register", () => {
     );
   });
 
+  it("return error for password and confirm not match", async () => {
+    const res = await request(app).post("/auth/register").send({
+      username: "anon",
+      email: "anon@gmail.com",
+      password: "password",
+      passwordConfirm: "password1",
+      userType: "user",
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual(
+      "Password confirmation field must have the same value as the password field"
+    );
+  });
+
   it("return error if email already associated with account", async () => {
     const res = await request(app).post("/auth/register").send({
       username: "test2",
       email: "test@gmail.com",
       password: "password",
+      passwordConfirm: "password",
       userType: "user",
     });
 
