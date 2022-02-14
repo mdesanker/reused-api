@@ -27,8 +27,8 @@ describe("POST /auth/register", () => {
     });
 
     expect(res.statusCode).toEqual(201);
-    expect(res.body).toHaveProperty("email");
-    expect(res.body.email).toEqual("test@gmail.com");
+    expect(res.body).toHaveProperty("token");
+    // expect(res.body.email).toEqual("test@gmail.com");
   });
 
   it("return error for missing login details", async () => {

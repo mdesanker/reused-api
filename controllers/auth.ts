@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { check, validationResult } from "express-validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 import User, { IUser } from "../models/User";
 
 const test = (req: Request, res: Response, next: NextFunction) => {
@@ -49,11 +51,20 @@ const register = [
 
       user.password = await bcrypt.hash(password, 10);
 
-      const newUser = await user.save();
+      await user.save();
 
-      console.log(newUser);
+      // Generate jwt
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
 
-      return res.status(201).json(newUser);
+      const token = jwt.sign(payload, process.env.JWT_KEY as string, {
+        expiresIn: "6h",
+      });
+
+      res.status(201).json({ token });
     } catch (err: unknown) {
       if (err instanceof Error) {
         res.status(500).send("Server error");
