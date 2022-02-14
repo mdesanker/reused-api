@@ -8,4 +8,4 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/auth", authRouter);
 
-export default app;
+export = app;
