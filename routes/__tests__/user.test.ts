@@ -5,8 +5,8 @@ import mongoose from "mongoose";
 import seedDB from "./seed";
 
 // GLOBAL VARIABLES
-let janeToken;
-let johnToken;
+let janeToken: string;
+let johnToken: string;
 
 // TEST SETUP
 beforeAll(async () => {
@@ -36,9 +36,23 @@ afterAll(() => {
 
 // GET ROUTES
 describe("GET /user/all", () => {
-  it("return list of all users", async () => {
-    const res = await request(app).get("/user/all");
+  it("return list of all users if user admin", async () => {
+    const res = await request(app)
+      .get("/user/all")
+      .set("x-auth-token", janeToken);
 
     expect(res.statusCode).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  it("return error if user not admin", async () => {
+    const res = await request(app)
+      .get("/user/all")
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
 });
