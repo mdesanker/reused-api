@@ -2,6 +2,7 @@ import app from "./app";
 import initializeTestServer from "../../config/mongoTestConfig";
 import request from "supertest";
 import mongoose from "mongoose";
+import seedDB from "./seed";
 
 // GLOBAL VARIABLES
 let userToken;
@@ -10,6 +11,7 @@ let adminToken;
 // TEST SETUP
 beforeAll(async () => {
   await initializeTestServer();
+  await seedDB();
 });
 
 afterAll(() => {
@@ -28,7 +30,6 @@ describe("POST /auth/register", () => {
 
     expect(res.statusCode).toEqual(201);
     expect(res.body).toHaveProperty("token");
-    // expect(res.body.email).toEqual("test@gmail.com");
   });
 
   it("return error for missing login details", async () => {
