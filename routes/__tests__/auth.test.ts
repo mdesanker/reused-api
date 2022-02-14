@@ -91,9 +91,9 @@ describe("POST /auth/login", () => {
       password: "",
     });
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(401);
     expect(res.body).toHaveProperty("errors");
-    expect(res.body.errors[0].msg).toEqual("Password is required");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
 
   it("return error for invalid credentials", async () => {
