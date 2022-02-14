@@ -4,7 +4,7 @@
   "description": "API for ReUsed store app",
   "main": "app.ts",
   "scripts": {
-    "test": "NODE_ENV=test jest ./routes/__tests__/auth.test.ts --testTimeout=10000 --detectOpenHandles --forceExit",
+    "test": "NODE_ENV=test jest ./routes/__tests__/user.test.ts --testTimeout=10000 --detectOpenHandles --forceExit",
     "start": "nodemon app.ts"
   },
   "repository": {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
-const test = async (req: Request, res: Response, next: NextFunction) => {
-  res.send("Test");
+const getUsers = async (req: Request, res: Response, next: NextFunction) => {
+  res.status(200).send("Test");
 };
 
-export default { test };
+export default { getUsers };
