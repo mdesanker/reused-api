@@ -71,7 +71,7 @@ describe("GET /user/:id", () => {
     expect(res.body).toHaveProperty("username");
   });
 
-  it("return error for user", async () => {
+  it("return error if not admin", async () => {
     const res = await request(app)
       .get(`/user/${userId}`)
       .set("x-auth-token", johnToken);

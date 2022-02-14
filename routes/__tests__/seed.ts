@@ -43,6 +43,7 @@ const seedDB = async () => {
   // Generate
   generateJane();
   generateJohn();
+  generateUser();
 
   // Save to db
   for (let user of users) {
