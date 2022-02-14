@@ -20,7 +20,7 @@ afterAll(() => {
 
 //POST ROUTES
 describe("POST /auth/register", () => {
-  it("return new user", async () => {
+  it("return token for new user", async () => {
     const res = await request(app).post("/auth/register").send({
       username: "test",
       email: "test@gmail.com",
@@ -71,6 +71,40 @@ describe("POST /auth/register", () => {
     expect(res.statusCode).toEqual(409);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Email is already in use");
+  });
+});
+
+describe("POST /auth/login", () => {
+  it("return token on successful login", async () => {
+    const res = await request(app).post("/auth/login").send({
+      email: "jane@gmail.com",
+      password: "password",
+    });
+
+    expect(res.statusCode).toEqual(201);
+    expect(res.body).toHaveProperty("token");
+  });
+
+  it("return error for missing parameter", async () => {
+    const res = await request(app).post("/auth/login").send({
+      email: "jane@gmail.com",
+      password: "",
+    });
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Password is required");
+  });
+
+  it("return error for invalid credentials", async () => {
+    const res = await request(app).post("/auth/login").send({
+      email: "janet@gmail.com",
+      password: "password",
+    });
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
 });
 
