@@ -5,23 +5,9 @@ import { IUser } from "../../models/User";
 declare global {
   namespace Express {
     interface Request {
-      // user?: Record<string, any>;
-      user?: IUser;
+      user: {
+        id?: Record<string, any>;
+      };
     }
   }
 }
-
-// declare namespace Express {
-//   export interface Request {
-//     user?: any;
-//   }
-// }
-
-// declare module "express-serve-static-core" {
-//   interface Request {
-//     user?: string;
-//   }
-//   interface Response {
-//     user?: string;
-//   }
-// }
