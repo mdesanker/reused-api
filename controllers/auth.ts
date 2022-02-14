@@ -6,10 +6,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import User, { IUser } from "../models/User";
 
-const test = (req: Request, res: Response, next: NextFunction) => {
-  res.send("Test");
-};
-
 const register = [
   // Validate and sanitize input
   check("username", "Username is required").trim().exists(),
@@ -132,4 +128,4 @@ const login = [
   },
 ];
 
-export default { test, register, login };
+export default { register, login };

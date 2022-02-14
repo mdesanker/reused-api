@@ -5,8 +5,6 @@ import mongoose from "mongoose";
 import seedDB from "./seed";
 
 // GLOBAL VARIABLES
-let userToken;
-let adminToken;
 
 // TEST SETUP
 beforeAll(async () => {
@@ -127,14 +125,3 @@ describe("POST /auth/login", () => {
     expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
 });
-
-// GET ROUTES
-describe("GET /auth", () => {
-  it("return 200 status code", async () => {
-    const res = await request(app).get("/auth");
-
-    expect(res.statusCode).toEqual(200);
-  });
-});
-
-//
