@@ -7,5 +7,6 @@ import categoryController from "../../controllers/category";
 category.get("/all", categoryController.all);
 category.get("/:id", categoryController.category);
 category.post("/add", auth, categoryController.add);
+category.put("/:id", auth, categoryController.update);
 
 export = category;

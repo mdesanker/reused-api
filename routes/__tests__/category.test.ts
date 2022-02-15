@@ -178,7 +178,7 @@ describe("PUT /category/:id", () => {
       })
       .set("x-auth-token", janeToken);
 
-    expect(res.statusCode).toEqual(401);
+    expect(res.statusCode).toEqual(400);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Name is required");
   });
