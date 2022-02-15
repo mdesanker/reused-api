@@ -3,9 +3,9 @@ const user = Router();
 import userController from "../../controllers/user";
 import auth from "../../middleware/authMiddleware";
 
-user.get("/all", auth, userController.allUsers);
-user.get("/detail", auth, userController.userDetail);
+user.get("/all", auth, userController.all);
+user.get("/detail", auth, userController.detail);
 user.get("/:id", auth, userController.user);
-user.delete("/:id", auth, userController.userDelete);
+user.delete("/:id", auth, userController.deleteUser);
 
 export = user;

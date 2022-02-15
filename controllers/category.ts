@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import Category from "../models/Category";
+import { check, validationResult } from "express-validator";
+import Category, { ICategory } from "../models/Category";
+import User from "../models/User";
 
 const all = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -31,4 +33,55 @@ const category = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { all, category };
+const add = [
+  // Validate and sanitize input
+  check("name", "Name is required").trim().notEmpty(),
+  check("description").trim(),
+
+  // Process input
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, description } = req.body;
+
+    try {
+      // Check user is admin
+      const user = await User.findById(req.user.id);
+
+      if (user?.userType !== "admin") {
+        return res
+          .status(401)
+          .json({ errors: [{ msg: "Invalid credentials" }] });
+      }
+
+      // Check name is available
+      const existingCategory = await Category.findOne({ name });
+
+      if (existingCategory) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "Category already exists" }] });
+      }
+
+      // Create and save category
+      const category = new Category<ICategory>({
+        name,
+        description,
+      });
+
+      await category.save();
+
+      res.json(category);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send("Server error");
+      }
+    }
+  },
+];
+
+export default { all, category, add };

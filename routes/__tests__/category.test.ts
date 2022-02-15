@@ -78,7 +78,7 @@ describe("POST /category/add", () => {
       .set("x-auth-token", janeToken);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.name).toEqual("name");
+    expect(res.body.name).toEqual("Tools");
     expect(res.body.description).toEqual("Get 'er done");
   });
 
@@ -107,9 +107,7 @@ describe("POST /category/add", () => {
 
     expect(res.statusCode).toEqual(400);
     expect(res.body).toHaveProperty("errors");
-    expect(res.body.errors[0].msg).toEqual(
-      "A category by that name already exists"
-    );
+    expect(res.body.errors[0].msg).toEqual("Category already exists");
   });
 
   it("return error if user not admin", async () => {
@@ -121,7 +119,7 @@ describe("POST /category/add", () => {
       })
       .set("x-auth-token", johnToken);
 
-    expect(res.statusCode).toEqual(400);
+    expect(res.statusCode).toEqual(401);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
