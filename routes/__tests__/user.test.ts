@@ -70,6 +70,18 @@ describe("GET /user/all", () => {
   });
 });
 
+describe("GET /user/detail", () => {
+  it("return details for logged in user", async () => {
+    const res = await request(app)
+      .get("/user/detail")
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body._id).toEqual(janeId);
+  });
+});
+
 describe("GET /user/:id", () => {
   it("return user by id for admin", async () => {
     const res = await request(app)
@@ -100,18 +112,6 @@ describe("GET /user/:id", () => {
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Invalid user id");
-  });
-});
-
-describe("GET /user/current/detail", () => {
-  it("return details for logged in user", async () => {
-    const res = await request(app)
-      .get("/user/current/detail")
-      .set("x-auth-token", janeToken);
-
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty("_id");
-    expect(res.body._id).toEqual(janeId);
   });
 });
 

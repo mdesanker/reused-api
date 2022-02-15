@@ -21,6 +21,19 @@ const allUsers = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const userDetail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Get user details
+    const user = await User.findById(req.user.id).select("-password");
+
+    res.json(user);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
 const user = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
@@ -38,19 +51,6 @@ const user = async (req: Request, res: Response, next: NextFunction) => {
     if (!user) {
       return res.status(404).json({ errors: [{ msg: "Invalid user id" }] });
     }
-
-    res.json(user);
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      res.status(500).send("Server error");
-    }
-  }
-};
-
-const userDetail = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    // Get user details
-    const user = await User.findById(req.user.id).select("-password");
 
     res.json(user);
   } catch (err: unknown) {
