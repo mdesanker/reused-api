@@ -13,4 +13,22 @@ const all = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { all };
+const category = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+
+  try {
+    const category = await Category.findById(id);
+
+    if (!category) {
+      return res.status(404).json({ errors: [{ msg: "Invalid category id" }] });
+    }
+
+    res.json(category);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
+export default { all, category };
