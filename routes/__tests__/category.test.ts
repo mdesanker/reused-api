@@ -31,5 +31,7 @@ describe("GET /category/all", () => {
     const res = await request(app).get("/category/all");
 
     expect(res.statusCode).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
   });
 });
