@@ -6,6 +6,7 @@ import seedDB from "./seed";
 
 // GLOBAL VARIABLES
 let janeToken: string;
+let johnToken: string;
 const electronicsId: string = "620b90e0c2b6e006dde0cb41";
 const apparelId: string = "620b90e0c2b6e006dde0cb42";
 let invalidId: string = "620b90e0c2b6e006dde00000";
@@ -22,6 +23,14 @@ beforeAll(async () => {
   });
 
   janeToken = janeLogin.body.token;
+
+  // Generate john token
+  const johnLogin = await request(app).post("/auth/login").send({
+    email: "john@gmail.com",
+    password: "password",
+  });
+
+  johnToken = johnLogin.body.token;
 });
 
 afterAll(() => {
@@ -54,5 +63,66 @@ describe("GET /category/:id", () => {
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Invalid category id");
+  });
+});
+
+// POST ROUTES
+describe("POST /category/add", () => {
+  it("return new category", async () => {
+    const res = await request(app)
+      .post("/category/add")
+      .send({
+        name: "Tools",
+        description: "Get 'er done",
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.name).toEqual("name");
+    expect(res.body.description).toEqual("Get 'er done");
+  });
+
+  it("return error if name missing", async () => {
+    const res = await request(app)
+      .post("/category/add")
+      .send({
+        name: "",
+        description: "Where did my name go?",
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Name is required");
+  });
+
+  it("return error if name already used", async () => {
+    const res = await request(app)
+      .post("/category/add")
+      .send({
+        name: "Tools",
+        description: "And another one...",
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual(
+      "A category by that name already exists"
+    );
+  });
+
+  it("return error if user not admin", async () => {
+    const res = await request(app)
+      .post("/category/add")
+      .send({
+        name: "Furniture",
+        description: "Furniture description",
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
 });
