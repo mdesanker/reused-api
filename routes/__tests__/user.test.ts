@@ -94,10 +94,10 @@ describe("GET /user/:id", () => {
   });
 });
 
-describe("GET /user/current", () => {
+describe("GET /user/current/detail", () => {
   it("return details for logged in user", async () => {
     const res = await request(app)
-      .get("/user/current")
+      .get("/user/current/detail")
       .set("x-auth-token", janeToken);
 
     expect(res.statusCode).toEqual(200);

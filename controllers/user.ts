@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import User from "../models/User";
 
-const getUsers = async (req: Request, res: Response, next: NextFunction) => {
+const allUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Check user credentials
     const user = await User.findById(req.user.id);
@@ -21,7 +21,7 @@ const getUsers = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getUser = async (req: Request, res: Response, next: NextFunction) => {
+const user = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   try {
@@ -47,4 +47,17 @@ const getUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { getUsers, getUser };
+const detail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Get user details
+    const user = await User.findById(req.user.id).select("-password");
+
+    res.json(user);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
+export default { allUsers, user, detail };
