@@ -221,7 +221,7 @@ describe("DELETE /category/:id", () => {
 
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("errors");
-    expect(res.body.error[0].msg).toEqual("Invalid category id");
+    expect(res.body.errors[0].msg).toEqual("Invalid category id");
   });
 
   it("return error for user not admin", async () => {
@@ -231,6 +231,6 @@ describe("DELETE /category/:id", () => {
 
     expect(res.statusCode).toEqual(401);
     expect(res.body).toHaveProperty("errors");
-    expect(res.body.error[0].msg).toEqual("Invalid credentials");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
 });
