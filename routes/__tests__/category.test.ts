@@ -197,3 +197,40 @@ describe("PUT /category/:id", () => {
     expect(res.body.errors[0].msg).toEqual("Invalid category id");
   });
 });
+
+describe("DELETE /category/:id", () => {
+  it("delete category by id", async () => {
+    const res = await request(app)
+      .delete(`/category/${electronicsId}`)
+      .set("x-auth-token", janeToken);
+
+    const check = await request(app)
+      .get(`/category/${electronicsId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.msg).toEqual("Category deleted");
+    expect(check.statusCode).toEqual(404);
+    expect(check.body.errors[0].msg).toEqual("Invalid category id");
+  });
+
+  it("return error for invalid category id", async () => {
+    const res = await request(app)
+      .delete(`/category/${invalidId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.error[0].msg).toEqual("Invalid category id");
+  });
+
+  it("return error for user not admin", async () => {
+    const res = await request(app)
+      .delete(`/category/${apparelId}`)
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.error[0].msg).toEqual("Invalid credentials");
+  });
+});
