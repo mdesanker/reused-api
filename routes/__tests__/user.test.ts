@@ -7,6 +7,7 @@ import seedDB from "./seed";
 // GLOBAL VARIABLES
 let janeToken: string;
 let johnToken: string;
+let userToken: string;
 const janeId: string = "620ab20b2dffe3ba60353a22";
 const johnId: string = "620ab20b2dffe3ba60353a23";
 const userId: string = "620ab20b2dffe3ba60353a99";
@@ -32,6 +33,14 @@ beforeAll(async () => {
   });
 
   johnToken = johnLogin.body.token;
+
+  // Generate user token
+  const userLogin = await request(app).post("/auth/login").send({
+    email: "john@gmail.com",
+    password: "password",
+  });
+
+  userToken = userLogin.body.token;
 });
 
 afterAll(() => {
@@ -103,5 +112,58 @@ describe("GET /user/current/detail", () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("_id");
     expect(res.body._id).toEqual(janeId);
+  });
+});
+
+// DELETE ROUTES
+describe("DELETE /user/:id", () => {
+  it("return error if not user", async () => {
+    const res = await request(app)
+      .delete(`/user/${johnId}`)
+      .set("x-auth-token", userToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
+  });
+
+  it("delete user by id", async () => {
+    const res = await request(app)
+      .delete(`/user/${johnId}`)
+      .set("x-auth-token", johnToken);
+
+    const find = await request(app)
+      .get(`/user/${johnId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.msg).toEqual("User deleted");
+    expect(find.statusCode).toEqual(404);
+    expect(find.body.errors[0].msg).toEqual("Invalid user id");
+  });
+
+  it("return error for invalid id", async () => {
+    const res = await request(app)
+      .delete(`/user/${invalidUserId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid user id");
+  });
+
+  it("allow admin to delete users", async () => {
+    const res = await request(app)
+      .delete(`/user/${userId}`)
+      .set("x-auth-token", janeToken);
+
+    const find = await request(app)
+      .get(`/user/${userId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.msg).toEqual("User deleted");
+    expect(find.statusCode).toEqual(404);
+    expect(find.body.errors[0].msg).toEqual("Invalid user id");
   });
 });
