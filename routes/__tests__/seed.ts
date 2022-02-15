@@ -6,6 +6,7 @@ const users: any[] = [];
 // USERS
 const generateJane = () => {
   const user = new User<IUser>({
+    _id: "620ab20b2dffe3ba60353a22",
     username: "jsmith",
     email: "jane@gmail.com",
     password: "$2a$10$dexhl0xuphcSioluvPGFk.FsLMe3uhhy/AjKCYeeBnaXRDfXrumZ.", // "password" hashed
@@ -17,6 +18,7 @@ const generateJane = () => {
 
 const generateJohn = () => {
   const user = new User<IUser>({
+    _id: "620ab20b2dffe3ba60353a23",
     username: "jdoe",
     email: "john@gmail.com",
     password: "$2a$10$Gul09bCyJD5IKoecO/WCPOcFONVyLTE3E9SxZMDD3gJ0OnBfFRjem", // "password" hashed

@@ -7,6 +7,8 @@ import seedDB from "./seed";
 // GLOBAL VARIABLES
 let janeToken: string;
 let johnToken: string;
+const janeId: string = "620ab20b2dffe3ba60353a22";
+const johnId: string = "620ab20b2dffe3ba60353a23";
 const userId: string = "620ab20b2dffe3ba60353a99";
 const invalidUserId: string = "620ab20b2dffe3ba60300000";
 
@@ -89,5 +91,17 @@ describe("GET /user/:id", () => {
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Invalid user id");
+  });
+});
+
+describe("GET /user/current", () => {
+  it("return details for logged in user", async () => {
+    const res = await request(app)
+      .get("/user/current")
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("_id");
+    expect(res.body._id).toEqual(janeId);
   });
 });
