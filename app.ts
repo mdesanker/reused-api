@@ -1,13 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
-import connectDB from "./config/mongoConfig";
 dotenv.config();
+import connectDB from "./config/mongoConfig";
 import helmet from "helmet";
 import compression from "compression";
 import cors from "cors";
 
 import authRouter from "./routes/api/auth";
 import userRouter from "./routes/api/user";
+import categoryRouter from "./routes/api/category";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/category", categoryRouter);
 
 const PORT = (process.env.PORT as string) || 8000;
 
