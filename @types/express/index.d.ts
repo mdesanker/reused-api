@@ -5,8 +5,10 @@ import { IUser } from "../../models/User";
 declare global {
   namespace Express {
     interface Request {
+      // user?: Record<string, any>;
       user: {
-        id?: Record<string, any>;
+        id?: string;
+        // id?: Record<string, string>;
       };
     }
   }

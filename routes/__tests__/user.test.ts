@@ -36,7 +36,7 @@ beforeAll(async () => {
 
   // Generate user token
   const userLogin = await request(app).post("/auth/login").send({
-    email: "john@gmail.com",
+    email: "email@gmail.com",
     password: "password",
   });
 
