@@ -124,3 +124,76 @@ describe("POST /category/add", () => {
     expect(res.body.errors[0].msg).toEqual("Invalid credentials");
   });
 });
+
+// PUT ROUTES
+describe("PUT /category/:id", () => {
+  it("return updated category", async () => {
+    const res = await request(app)
+      .put(`/category/${apparelId}`)
+      .send({
+        name: "Clothing",
+        description: "Clothes 4 u and clothes 4 me",
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body._id).toEqual(apparelId);
+    expect(res.body.name).toEqual("Clothing");
+  });
+
+  it("return error if new name taken", async () => {
+    const res = await request(app)
+      .put(`/category/${apparelId}`)
+      .send({
+        name: "Electronics",
+        description: "And another one...",
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Category already exists");
+  });
+
+  it("return error if user not admin", async () => {
+    const res = await request(app)
+      .put(`/category/${apparelId}`)
+      .send({
+        name: "Sports",
+        description: "Sports game things",
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
+  });
+
+  it("return error if name missing", async () => {
+    const res = await request(app)
+      .put(`/category/${apparelId}`)
+      .send({
+        name: "",
+        description: "No name brand",
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Name is required");
+  });
+
+  it("return error for invalid category id", async () => {
+    const res = await request(app)
+      .put(`/category/${invalidId}`)
+      .send({
+        name: "Household",
+        description: "Kitchenaid mixers and more",
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid category id");
+  });
+});
