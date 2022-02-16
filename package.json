@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "API for ReUsed store app",
   "main": "app.ts",
+  "engines": {
+    "node": "14.17.6"
+  },
   "scripts": {
     "test": "NODE_ENV=test jest ./routes/__tests__/product.test.ts --testTimeout=10000 --detectOpenHandles --forceExit",
     "start": "nodemon app.ts"
