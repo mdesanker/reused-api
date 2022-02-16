@@ -151,4 +151,96 @@ const add = [
   },
 ];
 
-export default { all, product, category, user, add };
+const update = [
+  // Convert images to array
+  (req: Request, res: Response, next: NextFunction) => {
+    if (!(req.body.images instanceof Array)) {
+      if (typeof req.body.images === "undefined") {
+        req.body.images = [];
+      } else {
+        req.body.images = new Array(req.body.images);
+      }
+    }
+    next();
+  },
+
+  // Validate and sanitize input
+  check("name", "Name is required").trim().notEmpty(),
+  check("price", "Price is required").trim().notEmpty(),
+  check("description", "Description is required").trim().notEmpty(),
+  check("condition", "Condition is required").trim().notEmpty(),
+  check("category", "Category is required").trim().notEmpty(),
+  check("images.*").trim(),
+
+  // Process input
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, price, description, condition, category, images } = req.body;
+
+    const { id } = req.params;
+
+    try {
+      // Check product id is valid
+      const product = await Product.findById(id).populate("category owner");
+
+      if (!product) {
+        return res
+          .status(404)
+          .json({ errors: [{ msg: "Invalid product id" }] });
+      }
+
+      // Check user is owner or admin
+      const user = await User.findById(req.user.id);
+
+      const isAuthor = user?.id === product.owner.id;
+
+      const isAdmin = user?.userType === "admin";
+
+      if (!isAuthor && !isAdmin) {
+        return res
+          .status(401)
+          .json({ errors: [{ msg: "Invalid credentials" }] });
+      }
+
+      // Check category is valid
+      const existingCategory = await Category.findById(category);
+
+      if (!existingCategory) {
+        return res
+          .status(404)
+          .json({ errors: [{ msg: "Invalid category id" }] });
+      }
+
+      // Update product
+      const replacementProduct = new Product<IProduct>({
+        _id: id,
+        name,
+        price,
+        description,
+        condition,
+        category,
+        images,
+        owner: product.owner._id,
+      });
+
+      const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        replacementProduct,
+        { new: true }
+      ).populate("category owner");
+
+      res.status(200).json(updatedProduct);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send("Server error");
+      }
+    }
+  },
+];
+
+export default { all, product, category, user, add, update };

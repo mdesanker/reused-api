@@ -8,5 +8,6 @@ product.get("/:id", productController.product);
 product.get("/category/:id", productController.category);
 product.get("/user/:id", productController.user);
 product.post("/add", auth, productController.add);
+product.put("/:id", auth, productController.update);
 
 export = product;
