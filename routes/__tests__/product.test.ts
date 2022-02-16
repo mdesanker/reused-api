@@ -125,7 +125,7 @@ describe("POST /product/add", () => {
       })
       .set("x-auth-token", janeToken);
 
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(201);
     expect(res.body.owner._id).toEqual(janeId);
     expect(res.body.category._id).toEqual(electronicsId);
     expect(res.body).toHaveProperty("name");

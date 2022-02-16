@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { check, validationResult } from "express-validator";
+import { Types } from "mongoose";
 import Category from "../models/Category";
-import Product from "../models/Product";
+import Product, { IProduct } from "../models/Product";
 import User from "../models/User";
 
 const all = async (req: Request, res: Response, next: NextFunction) => {
@@ -83,4 +84,71 @@ const user = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { all, product, category, user };
+const add = [
+  // Convert images to array
+  (req: Request, res: Response, next: NextFunction) => {
+    if (!(req.body.images instanceof Array)) {
+      if (typeof req.body.images === "undefined") {
+        req.body.images = [];
+      } else {
+        req.body.images = new Array(req.body.images);
+      }
+    }
+    next();
+  },
+
+  // Validate and sanitize input
+  check("name", "Name is required").trim().notEmpty(),
+  check("price", "Price is required").trim().notEmpty(),
+  check("description", "Description is required").trim().notEmpty(),
+  check("condition", "Condition is required").trim().notEmpty(),
+  check("category", "Category is required").trim().notEmpty(),
+  check("images.*").trim(),
+
+  // Process input
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, price, description, condition, category, images } = req.body;
+
+    try {
+      // Check category is valid
+      const existingCategory = await Category.findById(category);
+
+      if (!existingCategory) {
+        return res
+          .status(404)
+          .json({ errors: [{ msg: "Invalid category id" }] });
+      }
+
+      // Create new product
+      const product = new Product<IProduct>({
+        name,
+        price,
+        description,
+        condition,
+        category,
+        images,
+        owner: new Types.ObjectId(req.user.id),
+      });
+
+      await product.save();
+
+      const savedProduct = await Product.populate(product, {
+        path: "category owner",
+      });
+
+      res.status(201).json(savedProduct);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        res.status(500).send("Server error");
+      }
+    }
+  },
+];
+
+export default { all, product, category, user, add };

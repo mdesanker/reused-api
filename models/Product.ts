@@ -15,7 +15,7 @@ export interface IProduct {
 const ProductSchema = new Schema<IProduct>({
   name: { type: String, required: true },
   price: { type: String, required: true },
-  description: { type: String },
+  description: { type: String, required: true },
   condition: {
     type: String,
     enum: ["new", "like new", "excellent", "good", "fair", "poor"],
