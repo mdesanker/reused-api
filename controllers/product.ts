@@ -14,4 +14,23 @@ const all = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { all };
+const product = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+
+  try {
+    // Check id is valid
+    const product = await Product.findById(id).populate("category owner");
+
+    if (!product) {
+      return res.status(404).json({ errors: [{ msg: "Invalid product id" }] });
+    }
+
+    res.json(product);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
+export default { all, product };
