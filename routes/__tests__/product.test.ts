@@ -46,3 +46,21 @@ describe("GET /product/all", () => {
     expect(res.body.length).toBeGreaterThan(0);
   });
 });
+
+describe("GET /product/:id", () => {
+  it("return product by id", async () => {
+    const res = await request(app).get(`/product/${productId}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body._id).toEqual(productId);
+    expect(res.body).toHaveProperty("name");
+  });
+
+  it("return error for invalid product id", async () => {
+    const res = await request(app).get(`/product/${invalidProductId}`);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid product id");
+  });
+});
