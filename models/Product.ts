@@ -3,18 +3,18 @@ import { Schema, Types, model } from "mongoose";
 export interface IProduct {
   _id?: String;
   name: String;
-  price: Number;
+  price: String;
   description?: String;
   condition: "new" | "like new" | "excellent" | "good" | "fair" | "poor";
   category: Types.ObjectId;
-  date: Date;
+  date?: Date;
   images: String[];
   owner: Types.ObjectId;
 }
 
 const ProductSchema = new Schema<IProduct>({
   name: { type: String, required: true },
-  price: { type: Number, required: true },
+  price: { type: String, required: true },
   description: { type: String },
   condition: {
     type: String,
