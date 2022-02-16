@@ -243,4 +243,41 @@ const update = [
   },
 ];
 
-export default { all, product, category, user, add, update };
+const deleteProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+
+  try {
+    // Check id is valid
+    const product = await Product.findById(id).populate("owner");
+
+    if (!product) {
+      return res.status(404).json({ errors: [{ msg: "Invalid product id" }] });
+    }
+
+    // Check user credentials
+    const user = await User.findById(req.user.id);
+
+    const isOwner = user?.id === product.owner.id;
+
+    const isAdmin = user?.userType === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(401).json({ errors: [{ msg: "Invalid credentials" }] });
+    }
+
+    // Delete product
+    await Product.findByIdAndRemove(id);
+
+    res.json({ msg: "Product deleted" });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
+export default { all, product, category, user, add, update, deleteProduct };

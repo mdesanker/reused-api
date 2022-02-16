@@ -296,7 +296,7 @@ describe("DELETE /product/:id", () => {
     const check = await request(app).get(`/product/${johnProductId}`);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.msg).toEqual("Prouct deleted");
+    expect(res.body.msg).toEqual("Product deleted");
     expect(check.statusCode).toEqual(404);
     expect(check.body.errors[0].msg).toEqual("Invalid product id");
   });
@@ -318,7 +318,7 @@ describe("DELETE /product/:id", () => {
     const check = await request(app).get(`/product/${johnSecondProductId}`);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body.msg).toEqual("Prouct deleted");
+    expect(res.body.msg).toEqual("Product deleted");
     expect(check.statusCode).toEqual(404);
     expect(check.body.errors[0].msg).toEqual("Invalid product id");
   });
