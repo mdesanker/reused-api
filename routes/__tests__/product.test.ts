@@ -7,6 +7,9 @@ import seedDB from "./seed";
 // GLOBAL VARIABLES
 let janeToken: string;
 let johnToken: string;
+const janeId: string = "620ab20b2dffe3ba60353a22";
+const johnId: string = "620ab20b2dffe3ba60353a23";
+const invalidUserId: string = "620ab20b2dffe3ba60300000";
 const productId: string = "620c1d93a23cda22fcda0569";
 const invalidProductId: string = "620c1d93a23cda22fcd00000";
 const electronicsId: string = "620b90e0c2b6e006dde0cb41";
@@ -74,7 +77,7 @@ describe("GET /product/category/:id", () => {
     expect(res.statusCode).toEqual(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
-    expect(res.body[0].category.name).toEqual("Electronics");
+    expect(res.body[0].category._id).toEqual(electronicsId);
   });
 
   it("return error for invalid category id", async () => {
@@ -85,5 +88,24 @@ describe("GET /product/category/:id", () => {
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Invalid category id");
+  });
+});
+
+describe("GET /product/user/:id", () => {
+  it("return products for user id", async () => {
+    const res = await request(app).get(`/product/user/${janeId}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body[0].owner._id).toEqual(janeId);
+  });
+
+  it("return error for invalid user id", async () => {
+    const res = await request(app).get(`/product/user/${invalidUserId}`);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid user id");
   });
 });
