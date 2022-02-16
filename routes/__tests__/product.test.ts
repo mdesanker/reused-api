@@ -12,6 +12,7 @@ const johnId: string = "620ab20b2dffe3ba60353a23";
 const invalidUserId: string = "620ab20b2dffe3ba60300000";
 const janeProductId: string = "620c1d93a23cda22fcda0569"; // Electronics product
 const johnProductId: string = "620c1d93a23cda22fcda0571"; // Electronics product
+const johnSecondProductId: string = "620c1d93a23cda22fcda0572"; // Apparel product
 const invalidProductId: string = "620c1d93a23cda22fcd00000";
 const electronicsId: string = "620b90e0c2b6e006dde0cb41";
 const apparelId: string = "620b90e0c2b6e006dde0cb42";
@@ -282,5 +283,52 @@ describe("PUT /product/:id", () => {
     expect(res.statusCode).toEqual(404);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Invalid category id");
+  });
+});
+
+// DELETE ROUTES
+describe("DELETE /product/:id", () => {
+  it("return success message on delete", async () => {
+    const res = await request(app)
+      .delete(`/product/${johnProductId}`)
+      .set("x-auth-token", johnToken);
+
+    const check = await request(app).get(`/product/${johnProductId}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.msg).toEqual("Prouct deleted");
+    expect(check.statusCode).toEqual(404);
+    expect(check.body.errors[0].msg).toEqual("Invalid product id");
+  });
+
+  it("return error if user tries to delete other user's product", async () => {
+    const res = await request(app)
+      .delete(`/product/${janeProductId}`)
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
+  });
+
+  it("allow admin to delete any user product", async () => {
+    const res = await request(app)
+      .delete(`/product/${johnSecondProductId}`)
+      .set("x-auth-token", janeToken);
+
+    const check = await request(app).get(`/product/${johnSecondProductId}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.msg).toEqual("Prouct deleted");
+    expect(check.statusCode).toEqual(404);
+    expect(check.body.errors[0].msg).toEqual("Invalid product id");
+  });
+
+  it("return error for invalid product id", async () => {
+    const res = await request(app)
+      .delete(`/product/${invalidProductId}`)
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body.errors[0].msg).toEqual("Invalid product id");
   });
 });

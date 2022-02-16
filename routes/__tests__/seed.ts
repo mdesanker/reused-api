@@ -112,6 +112,21 @@ const generateJohnProduct = () => {
   products.push(product);
 };
 
+const generateSecondJohnProduct = () => {
+  const product = new Product<IProduct>({
+    _id: "620c1d93a23cda22fcda0572",
+    name: faker.commerce.productName(),
+    price: faker.commerce.price(),
+    description: faker.commerce.productDescription(),
+    condition: "excellent",
+    category: new Types.ObjectId("620b90e0c2b6e006dde0cb42"), // Apparel
+    images: [faker.image.imageUrl()],
+    owner: new Types.ObjectId("620ab20b2dffe3ba60353a23"), // John
+  });
+
+  products.push(product);
+};
+
 const generateRandomProduct = () => {
   const product = new Product<IProduct>({
     name: faker.commerce.productName(),
@@ -139,6 +154,7 @@ const seedDB = async () => {
   generateJaneElectronicsProduct();
   generateJaneApparelProduct();
   generateJohnProduct();
+  generateSecondJohnProduct();
 
   for (let i = 0; i < 3; i++) {
     generateRandomProduct();
