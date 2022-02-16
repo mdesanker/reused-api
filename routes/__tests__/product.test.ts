@@ -109,3 +109,61 @@ describe("GET /product/user/:id", () => {
     expect(res.body.errors[0].msg).toEqual("Invalid user id");
   });
 });
+
+// POST ROUTES
+describe("POST /product/add", () => {
+  it("return new post", async () => {
+    const res = await request(app)
+      .post("/product/add")
+      .send({
+        name: "Gaming mouse",
+        price: "45",
+        description: "This mouse doesn't eat cheese",
+        condition: "fair",
+        category: electronicsId,
+        images: ["http://placeimg.com/320/480"],
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.owner._id).toEqual(janeId);
+    expect(res.body.category._id).toEqual(electronicsId);
+    expect(res.body).toHaveProperty("name");
+  });
+
+  it("return error for invalid category id", async () => {
+    const res = await request(app)
+      .post("/product/add")
+      .send({
+        name: "Mouse pad",
+        price: "20",
+        description: "A comfortable bed for your mouse",
+        condition: "good",
+        category: invalidCategoryId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid category id");
+  });
+
+  it("return error for missing field", async () => {
+    const res = await request(app)
+      .post("/product/add")
+      .send({
+        name: "",
+        price: "20",
+        description: "A comfortable bed for your mouse",
+        condition: "good",
+        category: electronicsId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Name is required");
+  });
+});
