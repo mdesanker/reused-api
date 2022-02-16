@@ -1,9 +1,12 @@
 import { faker } from "@faker-js/faker";
 import User, { IUser } from "../../models/User";
 import Category, { ICategory } from "../../models/Category";
+import Product, { IProduct } from "../../models/Product";
+import { Types } from "mongoose";
 
 const users: any[] = [];
 const categories: any[] = [];
+const products: any[] = [];
 
 // USERS
 const generateJane = () => {
@@ -63,6 +66,36 @@ const generateApparel = () => {
   categories.push(category);
 };
 
+// PRODUCTS
+const generateJaneProduct = () => {
+  const product = new Product<IProduct>({
+    _id: "620c1d93a23cda22fcda0569",
+    name: faker.commerce.productName(),
+    price: faker.commerce.price(),
+    description: faker.commerce.productDescription(),
+    condition: "good",
+    category: new Types.ObjectId("620b90e0c2b6e006dde0cb41"), // Electronics
+    images: [faker.image.imageUrl()],
+    owner: new Types.ObjectId("620ab20b2dffe3ba60353a22"), // Jane
+  });
+
+  products.push(product);
+};
+
+const generateRandomProduct = () => {
+  const product = new Product<IProduct>({
+    name: faker.commerce.productName(),
+    price: faker.commerce.price(),
+    description: faker.commerce.productDescription(),
+    condition: "good",
+    category: new Types.ObjectId("620b90e0c2b6e006dde0cb41"), // Electronics
+    images: [faker.image.imageUrl()],
+    owner: new Types.ObjectId("620ab20b2dffe3ba60353a22"), // Jane
+  });
+
+  products.push(product);
+};
+
 // SEED FUNCTION
 const seedDB = async () => {
   // Generate
@@ -72,6 +105,12 @@ const seedDB = async () => {
 
   generateElectronics();
   generateApparel();
+
+  generateJaneProduct();
+
+  for (let i = 0; i < 3; i++) {
+    generateRandomProduct();
+  }
 
   // Save to db
   for (let user of users) {
@@ -90,8 +129,17 @@ const seedDB = async () => {
     }
   }
 
+  for (let product of products) {
+    try {
+      await product.save();
+    } catch (err) {
+      err;
+    }
+  }
+
   // console.log(users);
   // console.log(categories);
+  // console.log(products);
   return { users };
 };
 

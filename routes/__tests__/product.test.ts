@@ -7,6 +7,8 @@ import seedDB from "./seed";
 // GLOBAL VARIABLES
 let janeToken: string;
 let johnToken: string;
+const productId: string = "620c1d93a23cda22fcda0569";
+const invalidProductId: string = "620c1d93a23cda22fcd00000";
 
 // TEST SETUP
 beforeAll(async () => {
