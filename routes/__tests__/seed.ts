@@ -67,7 +67,7 @@ const generateApparel = () => {
 };
 
 // PRODUCTS
-const generateElectronicsProduct = () => {
+const generateJaneElectronicsProduct = () => {
   const product = new Product<IProduct>({
     _id: "620c1d93a23cda22fcda0569",
     name: faker.commerce.productName(),
@@ -82,7 +82,7 @@ const generateElectronicsProduct = () => {
   products.push(product);
 };
 
-const generateApparelProduct = () => {
+const generateJaneApparelProduct = () => {
   const product = new Product<IProduct>({
     _id: "620c1d93a23cda22fcda0570",
     name: faker.commerce.productName(),
@@ -92,6 +92,21 @@ const generateApparelProduct = () => {
     category: new Types.ObjectId("620b90e0c2b6e006dde0cb42"), // Apparel
     images: [faker.image.imageUrl()],
     owner: new Types.ObjectId("620ab20b2dffe3ba60353a22"), // Jane
+  });
+
+  products.push(product);
+};
+
+const generateJohnProduct = () => {
+  const product = new Product<IProduct>({
+    _id: "620c1d93a23cda22fcda0571",
+    name: faker.commerce.productName(),
+    price: faker.commerce.price(),
+    description: faker.commerce.productDescription(),
+    condition: "good",
+    category: new Types.ObjectId("620b90e0c2b6e006dde0cb41"), // Electronics
+    images: [faker.image.imageUrl()],
+    owner: new Types.ObjectId("620ab20b2dffe3ba60353a23"), // John
   });
 
   products.push(product);
@@ -121,8 +136,9 @@ const seedDB = async () => {
   generateElectronics();
   generateApparel();
 
-  generateElectronicsProduct();
-  generateApparelProduct();
+  generateJaneElectronicsProduct();
+  generateJaneApparelProduct();
+  generateJohnProduct();
 
   for (let i = 0; i < 3; i++) {
     generateRandomProduct();

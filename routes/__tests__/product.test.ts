@@ -10,9 +10,11 @@ let johnToken: string;
 const janeId: string = "620ab20b2dffe3ba60353a22";
 const johnId: string = "620ab20b2dffe3ba60353a23";
 const invalidUserId: string = "620ab20b2dffe3ba60300000";
-const productId: string = "620c1d93a23cda22fcda0569";
+const janeProductId: string = "620c1d93a23cda22fcda0569"; // Electronics product
+const johnProductId: string = "620c1d93a23cda22fcda0571"; // Electronics product
 const invalidProductId: string = "620c1d93a23cda22fcd00000";
 const electronicsId: string = "620b90e0c2b6e006dde0cb41";
+const apparelId: string = "620b90e0c2b6e006dde0cb42";
 const invalidCategoryId: string = "620b90e0c2b6e006dde00000";
 
 // TEST SETUP
@@ -54,10 +56,10 @@ describe("GET /product/all", () => {
 
 describe("GET /product/:id", () => {
   it("return product by id", async () => {
-    const res = await request(app).get(`/product/${productId}`);
+    const res = await request(app).get(`/product/${janeProductId}`);
 
     expect(res.statusCode).toEqual(200);
-    expect(res.body._id).toEqual(productId);
+    expect(res.body._id).toEqual(janeProductId);
     expect(res.body).toHaveProperty("name");
   });
 
@@ -165,5 +167,120 @@ describe("POST /product/add", () => {
     expect(res.statusCode).toEqual(400);
     expect(res.body).toHaveProperty("errors");
     expect(res.body.errors[0].msg).toEqual("Name is required");
+  });
+});
+
+// PUT ROUTES
+describe("PUT /product/:id", () => {
+  it("return updated product", async () => {
+    const res = await request(app)
+      .put(`/product/${johnProductId}`)
+      .send({
+        name: "Pants",
+        price: "25",
+        description: "Liar, liar, pants on fire",
+        condition: "poor",
+        category: apparelId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body._id).toEqual(johnProductId);
+    expect(res.body.owner._id).toEqual(johnId);
+    expect(res.body).toHaveProperty("name");
+    expect(res.body.category._id).toEqual(apparelId);
+  });
+
+  it("return error if user not owner", async () => {
+    const res = await request(app)
+      .put(`/product/${janeProductId}`)
+      .send({
+        name: "Also My Pants",
+        price: "75",
+        description: "Now they are my pants!",
+        condition: "good",
+        category: apparelId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(401);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid credentials");
+  });
+
+  it("admin can edit user products", async () => {
+    const res = await request(app)
+      .put(`/product/${johnProductId}`)
+      .send({
+        name: "John's shirt",
+        price: "2",
+        description: "This is actually a shirt",
+        condition: "poor",
+        category: apparelId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body._id).toEqual(johnProductId);
+    expect(res.body.owner._id).toEqual(johnId);
+    expect(res.body.category._id).toEqual(apparelId);
+    expect(res.body).toHaveProperty("name");
+  });
+
+  it("return error for invalid product id", async () => {
+    const res = await request(app)
+      .put(`/product/${invalidProductId}`)
+      .send({
+        name: "Blargh",
+        price: "666",
+        description: "Will this work?",
+        condition: "good",
+        category: apparelId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid product id");
+  });
+
+  it("return error if field missing", async () => {
+    const res = await request(app)
+      .put(`/product/${johnProductId}`)
+      .send({
+        name: "",
+        price: "20",
+        description: "A comfortable bed for your mouse",
+        condition: "good",
+        category: electronicsId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Name is required");
+  });
+
+  it("return error if invalid category id", async () => {
+    const res = await request(app)
+      .put(`/product/${johnProductId}`)
+      .send({
+        name: "Mouse pad",
+        price: "20",
+        description: "A comfortable bed for your mouse",
+        condition: "good",
+        category: invalidCategoryId,
+        images: ["http://placeimg.com/660/480"],
+      })
+      .set("x-auth-token", johnToken);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body).toHaveProperty("errors");
+    expect(res.body.errors[0].msg).toEqual("Invalid category id");
   });
 });
