@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { check, validationResult } from "express-validator";
 import Category from "../models/Category";
 import Product from "../models/Product";
+import User from "../models/User";
 
 const all = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -58,4 +59,28 @@ const category = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { all, product, category };
+const user = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+
+  try {
+    // Check id is valid
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ errors: [{ msg: "Invalid user id" }] });
+    }
+
+    // Get user products
+    const products = await Product.find({ user: id }).populate(
+      "category owner"
+    );
+
+    res.json(products);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
+export default { all, product, category, user };
