@@ -2,11 +2,13 @@ import { faker } from "@faker-js/faker";
 import User, { IUser } from "../../models/User";
 import Category, { ICategory } from "../../models/Category";
 import Product, { IProduct } from "../../models/Product";
+import Cart, { ICart } from "../../models/Cart";
 import { Types } from "mongoose";
 
 const users: any[] = [];
 const categories: any[] = [];
 const products: any[] = [];
+const carts: any[] = [];
 
 // USERS
 const generateJane = () => {
@@ -141,6 +143,31 @@ const generateRandomProduct = () => {
   products.push(product);
 };
 
+// CARTS
+const generateCart = () => {
+  const cart = new Cart<ICart>({
+    _id: "620e1a4b2dc4a3341164625a",
+    products: [
+      { product: new Types.ObjectId("620c1d93a23cda22fcda0569"), quantity: 1 },
+    ],
+  });
+
+  carts.push(cart);
+};
+
+const generateJohnCart = () => {
+  const cart = new Cart<ICart>({
+    _id: "620e1a4b2dc4a3341164625c",
+    user: new Types.ObjectId("620ab20b2dffe3ba60353a23"),
+    products: [
+      { product: new Types.ObjectId("620c1d93a23cda22fcda0569"), quantity: 1 },
+      { product: new Types.ObjectId("620c1d93a23cda22fcda0570"), quantity: 1 },
+    ],
+  });
+
+  carts.push(cart);
+};
+
 // SEED FUNCTION
 const seedDB = async () => {
   // Generate
@@ -155,6 +182,9 @@ const seedDB = async () => {
   generateJaneApparelProduct();
   generateJohnProduct();
   generateSecondJohnProduct();
+
+  generateCart();
+  generateJohnCart();
 
   for (let i = 0; i < 3; i++) {
     generateRandomProduct();
@@ -185,9 +215,18 @@ const seedDB = async () => {
     }
   }
 
+  for (let cart of carts) {
+    try {
+      await cart.save();
+    } catch (err) {
+      err;
+    }
+  }
+
   // console.log(users);
   // console.log(categories);
   // console.log(products);
+  // console.log(carts);
   return { users };
 };
 

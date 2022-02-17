@@ -2,7 +2,7 @@ import { Schema, Types, model } from "mongoose";
 
 export interface ICart {
   _id?: String;
-  user: Types.ObjectId;
+  user?: Types.ObjectId;
   products: {
     product: Types.ObjectId;
     quantity: Number;

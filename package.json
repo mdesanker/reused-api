@@ -7,7 +7,7 @@
     "node": "14.17.6"
   },
   "scripts": {
-    "test": "NODE_ENV=test jest ./routes/__tests__/product.test.ts --testTimeout=10000 --detectOpenHandles --forceExit",
+    "test": "NODE_ENV=test jest ./routes/__tests__/cart.test.ts --testTimeout=10000 --detectOpenHandles --forceExit",
     "start": "nodemon app.ts"
   },
   "repository": {
