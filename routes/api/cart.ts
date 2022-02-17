@@ -4,4 +4,6 @@ import cartController from "../../controllers/cart";
 
 cart.get("/all", cartController.all);
 cart.get("/user/:id", cartController.user);
+cart.get("/:id", cartController.cart);
+
 export = cart;
