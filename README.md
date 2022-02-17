@@ -9,6 +9,7 @@ This was developed to be used as a backend API for an e-commerce store that allo
 - [Description](#Description)
 - [How to set up locally](#How-to-set-up-locally)
 - [Built with](#Built-with)
+- [Thoughts](#Thoughts)
 
 ## Description
 
@@ -51,3 +52,9 @@ npm test
 - MongoDB/Mongoose
 - supertest
 - TypeScript
+
+## Thoughts
+
+Although I did not end up implementing a frontend with for this API (yet), it was the first "project" where I used TypeScript with Express/NodeJS.
+
+Craigslist and Facebook Marketplace rely on the users to contact each other to determine price, and conditions for the exchange. This negates the need for a cart system, which I think would be the most complex part of an e-commerce store. The cart system I implemented here requires users to be logged into an account so that their userId can be stored in the cart document. This is impractical as users should be able to browse and purchase items without logging in/creating an account. I read about this briefly (storing cart info in a cookie), but did not work on implementing this yet.
