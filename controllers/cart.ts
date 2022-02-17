@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import Cart from "../models/Cart";
+import { Types } from "mongoose";
+import Cart, { ICart } from "../models/Cart";
 import User from "../models/User";
 
 const all = async (req: Request, res: Response, next: NextFunction) => {
@@ -58,4 +59,33 @@ const cart = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { all, user, cart };
+const create = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Check user doesn't already have cart
+    const existingCart = await Cart.findOne({ user: req.user.id });
+
+    if (existingCart) {
+      return res
+        .status(405)
+        .json({ errors: [{ msg: "User already has a cart" }] });
+    }
+
+    // Create new cart
+    const cart = new Cart<ICart>({
+      user: new Types.ObjectId(req.user.id),
+      products: [],
+    });
+
+    await cart.save();
+
+    const newCart = await Cart.populate(cart, { path: "user" });
+
+    res.status(201).json(newCart);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
+export default { all, user, cart, create };
