@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
 import Cart, { ICart } from "../models/Cart";
+import Product from "../models/Product";
 import User from "../models/User";
 
 const all = async (req: Request, res: Response, next: NextFunction) => {
@@ -88,4 +89,45 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { all, user, cart, create };
+const update = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Get users cart
+    const cart = await Cart.findOne({ user: req.user.id }).populate(
+      "user",
+      "-password"
+    );
+
+    let products: any[] = [];
+
+    // Check and add cart items
+    if (req.body.length !== 0) {
+      for (let item of req.body) {
+        const product = await Product.findById(item.product);
+
+        if (product) {
+          products.push({
+            product: product._id,
+            quantity: item.quantity,
+          });
+        }
+      }
+    }
+
+    // Update cart with new products array
+    const update = await Cart.findByIdAndUpdate(
+      cart?.id,
+      { products },
+      { new: true }
+    );
+
+    const updatedCart = await Cart.populate(update, { path: "user" });
+
+    res.json(updatedCart);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).send("Server error");
+    }
+  }
+};
+
+export default { all, user, cart, create, update };
