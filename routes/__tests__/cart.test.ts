@@ -88,3 +88,25 @@ describe("GET /cart/:id", () => {
     expect(res.body.errors[0].msg).toEqual("Invalid cart id");
   });
 });
+
+// POST ROUTES
+describe("POST /cart/create", () => {
+  it("create new cart for user", async () => {
+    const res = await request(app)
+      .post("/cart/create")
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.user).toEqual(janeId);
+    expect(res.body.products.length).toEqual(0);
+  });
+
+  it("return error if user already has a cart", async () => {
+    const res = await request(app)
+      .post("/cart/create")
+      .set("x-auth-token", janeToken);
+
+    expect(res.statusCode).toEqual(405);
+    expect(res.body.errors[0].msg).toEqual("User already has a cart");
+  });
+});
