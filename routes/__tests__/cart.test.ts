@@ -13,6 +13,7 @@ const userId: string = "620ab20b2dffe3ba60353a99";
 const invalidUserId: string = "620ab20b2dffe3ba60300000";
 const cartId: string = "620e1a4b2dc4a3341164625a";
 const johnCartId: string = "620e1a4b2dc4a3341164625c";
+const invalidCartId: string = "620e1a4b2dc4a33411600000";
 const electronicsId: string = "620b90e0c2b6e006dde0cb41";
 const apparelId: string = "620b90e0c2b6e006dde0cb42";
 let invalidId: string = "620b90e0c2b6e006dde00000";
@@ -68,5 +69,22 @@ describe("GET /cart/user/:id", () => {
 
     expect(res.statusCode).toEqual(404);
     expect(res.body.errors[0].msg).toEqual("Invalid user id");
+  });
+});
+
+describe("GET /cart/:id", () => {
+  it("return specific cart", async () => {
+    const res = await request(app).get(`/cart/${johnCartId}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.body._id).toEqual(johnCartId);
+    expect(res.body).toHaveProperty("products");
+  });
+
+  it("return error for invalid cart id", async () => {
+    const res = await request(app).get(`/cart/${invalidCartId}`);
+
+    expect(res.statusCode).toEqual(404);
+    expect(res.body.errors[0].msg).toEqual("Invalid cart id");
   });
 });
